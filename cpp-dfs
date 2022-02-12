@@ -19,11 +19,11 @@ void bfs_fire_out(int now,int t){
 	else{
 		return ;
 	}
-	for(int i=0;i<node[x].child.size();i++){
-		bfs_fire_out(node[x].child[i].nxt,t+1);
+	for(int i=0;i<node[now].child.size();i++){
+		bfs_fire_out(node[now].child[i].nxt,t+node[now].child[i].value);
 	}
-	for(int i=0;i<node[x].father.size();i++){
-		bfs_fire_out(node[x].father[i].nxt,t+1);
+	for(int i=0;i<node[now].father.size();i++){
+		bfs_fire_out(node[now].father[i].nxt,t+node[now].father[i].value);
 	}
 }
 void dfs(int now,string re,int tot,int t){
@@ -71,6 +71,7 @@ int main(){
 		cin>>on_f;
 		bfs_fire_out(on_f,0);
 	}
+//	cout<<"!";
 	no+=s+'0';
 	dfs(s,no,0,0);	 
 } 
