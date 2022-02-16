@@ -1,0 +1,38 @@
+void input_data(){
+	ifstream ifs;
+	string read_in;
+	ifs.open("input.txt");
+	if(!ifs.is_open()){
+		cout<<"Fail to load\n";
+	} 
+	else{
+		while(getline(ifs,read_in)){
+//			input_data(read_in,rt);
+			data_in.push_back(atoi(read_in.c_str()));
+			cout<<data_in[data_in.size()-1]<<"!\n";
+		}
+	}
+	pair_s tmp;
+	int on_f,x,a,b,n=data_in[0],o,t=1;
+	for(int i=1;i<=n;i++){
+		x=data_in[t],t++;
+		node[i].now_value=99999;
+		node[i].on_fire_t=9999;
+		for(int c=0;c<x;c++){
+			a=data_in[t],t++;
+			b=data_in[t],t++;
+			tmp.nxt=a,tmp.value=b;
+			node[i].child.push_back(tmp);
+			tmp.nxt=i,tmp.value=b;
+			node[a].father.push_back(tmp);	
+		}
+	}
+	string no="";
+	s=data_in[t],t++;
+	e=data_in[t],t++;
+	o=data_in[t],t++;
+	for(int k=0;k<o;k++){
+		on_f=data_in[t],t++;
+		bfs_fire_out(on_f,0);
+	}
+}
