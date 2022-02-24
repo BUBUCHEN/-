@@ -1,0 +1,88 @@
+#include<iostream>
+#include <fstream>
+#include<vector>
+#include <cstdlib> // atoi 函數所在函式庫
+#include <string>
+using namespace std;
+#define infinity 2147483647
+struct pair_s{//自製pair 
+		int nxt;//下一個節點 
+		int value;//權重 
+};
+struct node_struct{
+	int now_value;
+	int on_fire_t; 
+	int x;
+	int y;
+	vector<pair_s> child;
+	vector<pair_s> father; 
+};
+int n,s,e;//n>>點的個數,s,e為終點、起點 
+node_struct node[200];
+void bfs_fire_out(int,int);
+void init();
+void input_data(){
+	int x,a,b,o,f_in;
+	pair_s tmp;
+	ifstream f_data,f_xy;
+	string read_in;
+	f_data.open("input_data.txt");
+	f_data>>n;
+	init();
+	for(int i=1;i<=n;i++){//逐一輸入每個node的資訊 
+		f_data>>x;
+		for(int v=0;v<x;v++){
+			f_data>>a>>b;
+			tmp.nxt=a,tmp.value=b;
+			node[i].child.push_back(tmp);
+			tmp.nxt=i;
+			node[a].father.push_back(tmp);
+		}
+	}
+	f_data>>s>>e>>o;
+	for(int v=0;v<o;v++){
+		f_data>>f_in;
+		cout<<f_in;
+		node[f_in].on_fire_t=0;
+		bfs_fire_out(f_in,0);
+	}	
+}
+void init(){
+	for(int i=1;i<=n;i++){
+		node[i].now_value=infinity;
+		node[i].on_fire_t=infinity;
+	}
+}
+void bfs_fire_out(int pos,int t){
+	if(t<=node[pos].on_fire_t){
+		node[pos].on_fire_t=t;
+		for(int i=0;i<node[pos].child.size();i++){
+			bfs_fire_out(node[pos].child[i].nxt,t+node[pos].child[i].value);
+		}
+		for(int i=0;i<node[pos].father.size();i++){
+			bfs_fire_out(node[pos].father[i].nxt,t+node[pos].father[i].value);
+		}
+	}	
+	else{
+		return ;
+	}
+}
+void dfs(int now,string re,int tot){
+	cout<<re<<"!\n";
+	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
+//		cout<<"QQ";
+		return ;
+	}
+	if(now==e){
+		cout<<re<<" "<<tot<<"==\n";
+		return ;
+	}
+	for(int i=0;i<node[now].child.size();i++){
+		dfs(node[now].child[i].nxt,re+(char)(node[now].child[i].nxt+'0'),tot+node[now].child[i].value);
+	}
+}
+int main(){
+	input_data();
+	string no="";
+	dfs(s,no,0);
+}
