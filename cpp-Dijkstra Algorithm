@@ -1,150 +1,112 @@
-#include<iostream>
-#include <fstream>
-#include<vector>
-#include <cstdlib> // atoi 函數所在函式庫
+#include <iostream>
 #include <string>
+#include<vector>
+#include<fstream>
+#define inf 9999999;
 using namespace std;
-vector<int> data_in;
-struct pair_s{//自製pair 
-		int nxt;//下一個節點 
-		int value;//權重 
+struct pair_s{//自製pair
+		int nxt;//下一個節點
+		int value;//權重
 };
 struct node_struct{
 	int now_value;
-	int on_fire_t; 
+	int on_fire_t;
+	int x;
+	int y;
+	int was_father;
 	vector<pair_s> child;
-	vector<pair_s> father; 
+	vector<pair_s> father;
 };
-void bfs_fire_out(int,int);
-int s,e;
 node_struct node[200];
+int n,s,e,yourdad[2000]={};
+void bfs_fire_out(int,int);
+void init();
 void input_data(){
-	ifstream ifs;
-	string read_in;
-	ifs.open("input.txt");
-	if(!ifs.is_open()){
-		cout<<"Fail to load\n";
-	} 
-	else{
-		while(getline(ifs,read_in)){
-//			input_data(read_in,rt);
-			data_in.push_back(atoi(read_in.c_str()));
-			cout<<data_in[data_in.size()-1]<<"!\n";
-		}
-	}
+	int x,a,b,o,f_in;
 	pair_s tmp;
-	int on_f,x,a,b,n=data_in[0],o,t=1;
-	for(int i=1;i<=n;i++){
-		x=data_in[t],t++;
-		node[i].now_value=99999;
-		node[i].on_fire_t=9999;
-		for(int c=0;c<x;c++){
-			a=data_in[t],t++;
-			b=data_in[t],t++;
+	ifstream f_data,f_xy;
+	string read_in;
+	f_data.open("input_data.txt");
+	f_data>>n;
+	init();
+	for(int i=1;i<=n;i++){//逐一輸入每個node的資訊
+		f_data>>x;
+		for(int v=0;v<x;v++){
+			f_data>>a>>b;
 			tmp.nxt=a,tmp.value=b;
 			node[i].child.push_back(tmp);
-			tmp.nxt=i,tmp.value=b;
-			node[a].father.push_back(tmp);	
+			tmp.nxt=i;
+			node[a].father.push_back(tmp);
 		}
 	}
-	string no="";
-	s=data_in[t],t++;
-	e=data_in[t],t++;
-	o=data_in[t],t++;
-	for(int k=0;k<o;k++){
-		on_f=data_in[t],t++;
-		bfs_fire_out(on_f,0);
+	f_data>>s>>e>>o;
+	for(int v=0;v<o;v++){
+		f_data>>f_in;
+		// cout<<f_in;
+		node[f_in].on_fire_t=0;
+		// bfs_fire_out(f_in,0);
 	}
 }
-void bfs_fire_out(int now,int t){
-	if(node[now].on_fire_t<t){
-		node[now].on_fire_t=t;
+void bfs_fire_out(int pos,int t){
+	if(t<=node[pos].on_fire_t){
+		node[pos].on_fire_t=t;
+		for(int i=0;i<node[pos].child.size();i++){
+			bfs_fire_out(node[pos].child[i].nxt,t+node[pos].child[i].value);
+		}
+		for(int i=0;i<node[pos].father.size();i++){
+			bfs_fire_out(node[pos].father[i].nxt,t+node[pos].father[i].value);
+		}
 	}
 	else{
 		return ;
 	}
-	for(int i=0;i<node[now].child.size();i++){
-		bfs_fire_out(node[now].child[i].nxt,t+node[now].child[i].value);
-	}
-	for(int i=0;i<node[now].father.size();i++){
-		bfs_fire_out(node[now].father[i].nxt,t+node[now].father[i].value);
+}
+void dijkstra(int u){
+	int start=u,min=inf;
+	node[start].now_value=0;
+	for(int i=0;i<n;i++){
+		min=inf;
+		for(int j=1;j<=n;j++){
+			if (min> node[j].now_value and node[j].was_father==0)
+			{
+				min = node[j].now_value;
+				start = j;
+			}
+		}
+		node[start].was_father=1;
+		for (int k=0; k<node[start].child.size(); k++)
+		{
+				if (node[node[start].child[k].nxt].now_value >node[start].now_value + node[start].child[k].value)
+				{
+					node[node[start].child[k].nxt].now_value = node[start].now_value + node[start].child[k].value;
+					yourdad[node[start].child[k].nxt] = start;
+				}
+		}
 	}
 }
-void dijk(int now_pos,int now_value){
-	if(now_value>=node[now_pos].now_value||now_value>node[now_pos].on_fire_t){
-		return ;
-	}
-	else {
-		node[now_pos].now_value=now_value;
-	}
-	for(int i=0;i<node[now_pos].child.size();i++){
-		dijk(node[now_pos].child[i].nxt,now_value+node[now_pos].child[i].value);
-	}
+int complete_path (int s, int en, int p)
+{
+  if(s==en)
+  {
+    return p;
+  }
+  p = 10*p + yourdad[en];
+  complete_path(s,yourdad[en],p);
 }
-void back_tracking(int now_pos,string recode){
-	recode+=now_pos+'0';
-	if(now_pos==s){
-		ofstream ofs;
-		ofs.open("output.txt");
-		if(!ofs.is_open()){
-			cout<<"write document error!!\n";
-		}
-		else{
-			ofs<<recode<<"\n";
-			ofs.close();
-		} 
-		return ;
-	}
-	for(int i=0;i<node[now_pos].father.size();i++){
-		if(node[now_pos].now_value-node[now_pos].father[i].value==node[node[now_pos].father[i].nxt].now_value){
-			back_tracking(node[now_pos].father[i].nxt,recode);
-		}
+void init(){
+	for(int i=1;i<=n;i++){
+		yourdad[i]=0;
+		node[i].now_value=inf;
+		node[i].on_fire_t=inf;
+		node[i].was_father=0;
 	}
 }
 int main(){
-//	pair_s tmp;
-	/*
-	輸入介紹:
-	第一行一個數字n
-	再來有n 行
-	每 i 行第一個數字是 a_(i-1) 這個節點的子節點數 x  子節點編號由1~n 
-	再來會有2x個數字 第一個代表子節點的編號，第二個數字代表權重
-	最後會有兩個數字代表起點、終點 
-	再來會有一個數字 o 代表有幾個點著火
-	再來會有o行，代表著火的點的編號 
-	*/
-	
-	int n,i,x,a,b,o,on_f;
-//	cin>>n;
-//	for(int i=1;i<=n;i++){
-//		cin>>x;
-//		node[i].now_value=99999;
-//		node[i].on_fire_t=9999;
-//		for(int c=0;c<x;c++){
-//			cin>>a>>b;
-//			tmp.nxt=a,tmp.value=b;
-//			node[i].child.push_back(tmp);
-//			tmp.nxt=i,tmp.value=b;
-//			node[a].father.push_back(tmp);	
-//		} 
-//	}
-	input_data();
-	string no=""; 
-	dijk(s,0);	 
-	back_tracking(e,no);
-} 
-
-/* exmaple 
-8
-3 2 10 4 10 8 1000
-1 3 20
-1 5 30
-1 6 100
-1 8 40
-1 7 50
-1 8 10
-0
-1 8
-1
-6
-*/
+input_data();
+dijkstra(1);
+// cout<<"!";
+int result=complete_path(s,e,e);
+ofstream opt("output.txt");
+opt<<result;
+return 0;
+}
