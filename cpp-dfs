@@ -1,77 +1,89 @@
 #include<iostream>
+#include<fstream>
 #include<vector>
+#include <stdlib.h>
+#include <stdio.h>
+
 using namespace std;
 struct pair_s{//自製pair 
 		int nxt;//下一個節點 
 		int value;//權重 
 };
 struct node_struct{
+	int now_value;
 	int on_fire_t; 
+	int x;
+	int y;
 	vector<pair_s> child;
 	vector<pair_s> father; 
 };
-int e;
-node_struct node[200];
-void bfs_fire_out(int now,int t){
-	if(node[now].on_fire_t<t){
-		node[now].on_fire_t=t;
-	}
+int n,s,e;
+node_struct node[1000];
+void bfs_fire_out(int pos,int t){
+	if(t<node[pos].on_fire_t){
+		node[pos].on_fire_t=t;
+		for(int i=0;i<node[pos].child.size();i++){
+			bfs_fire_out(node[pos].child[i].nxt,t+node[pos].child[i].value);
+		}
+		for(int i=0;i<node[pos].father.size();i++){
+			bfs_fire_out(node[pos].father[i].nxt,t+node[pos].father[i].value);
+		}
+	}	
 	else{
 		return ;
 	}
-	for(int i=0;i<node[now].child.size();i++){
-		bfs_fire_out(node[now].child[i].nxt,t+node[now].child[i].value);
+}
+void input_data(){
+	ifstream fst;
+	int m,a,b,on_f,o;
+	pair_s tmp;
+	fst.open("input.txt");
+	fst>>n;
+//	cout<<n;
+	for(int i=1;i<=n;i++){
+		fst>>m;
+		for(int c=0;c<m;c++){
+			fst>>a>>b;
+			tmp.nxt=a,tmp.value=b;
+			node[i].child.push_back(tmp);
+			tmp.nxt=i;
+			node[a].father.push_back(tmp);
+		}
 	}
-	for(int i=0;i<node[now].father.size();i++){
-		bfs_fire_out(node[now].father[i].nxt,t+node[now].father[i].value);
+	for(int i=1;i<=n;i++){
+		node[i].on_fire_t=99999;
+		node[i].now_value=9999;
+	}
+	fst>>s>>e>>o;
+	for(int j=0;j<o;j++){
+		fst>>on_f;
+		bfs_fire_out(on_f,0);
 	}
 }
-void dfs(int now,string re,int tot,int t){
-	if(t>=node[now].on_fire_t){
-		return ;
-	}
+int mhin=99999;
+string qlq;
+void dfs(int now,string re,int tot){
+//	cout<<now;
 	if(now==e){
-		cout<<re<<" "<<tot<<"\n";
+		if(tot<mhin){
+			mhin=tot;
+			qlq=re;
+		}
+//		cout<<re<<" "<<tot<<"!\n";
 		return ;
 	}
+	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
+		return ;
+	}                    
 	for(int i=0;i<node[now].child.size();i++){
-		dfs(node[now].child[i].nxt,re+(char)(node[now].child[i].nxt+'0'),tot+node[now].child[i].value,t+1);
+		dfs(node[now].child[i].nxt,re+(char)(node[now].child[i].nxt+'0')+" ",tot+node[now].child[i].value);
 	}
 }
 int main(){
-	pair_s tmp;
-	/*
-	輸入介紹:
-	第一行一個數字n
-	再來有n 行
-	每 i 行第一個數字是 a_(i-1) 這個節點的子節點數 x  子節點編號由1~n 
-	再來會有2x個數字 第一個代表子節點的編號，第二個數字代表權重
-	最後會有兩個數字代表起點、終點 
-	再來會有一個數字 o 代表有幾個點著火
-	再來會有o行，代表著火的點的編號 
-	*/
-	
-	int n,i,x,a,b,s,o,on_f;
-	cin>>n;
-	for(int i=1;i<=n;i++){
-		cin>>x;
-		node[i].on_fire_t=9999;
-		for(int c=0;c<x;c++){
-			cin>>a>>b;
-			tmp.nxt=a,tmp.value=b;
-			node[i].child.push_back(tmp);
-			tmp.nxt=i,tmp.value=b;
-			node[a].father.push_back(tmp);	
-		} 
-	}
-	string no="";
-	cin>>s>>e;
-	cin>>o;
-	for(int k=0;k<o;k++){
-		cin>>on_f;
-		bfs_fire_out(on_f,0);
-	}
-//	cout<<"!";
-	no+=s+'0';
-	dfs(s,no,0,0);	 
+	input_data();
+	ofstream ofs;
+	ofs.open("output.txt");
+	dfs(s,"",0);
+	cout<<qlq<<mhin;
+	ofs<<qlq<<mhin;
 } 
