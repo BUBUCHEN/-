@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
+#include<algorithm>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -39,7 +40,9 @@ string int2str(int num){
 		a+=(char)((num%10)+'0');
 		num/=10;
 	}
-	return a;
+	string reversed(a);
+	reverse(reversed.begin(),reversed.end());	
+	return reversed;
 }
 void input_data(){
 	ifstream fst;
