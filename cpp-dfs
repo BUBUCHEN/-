@@ -33,6 +33,14 @@ void bfs_fire_out(int pos,int t){
 		return ;
 	}
 }
+string int2str(int num){
+	string a;
+	while(num){
+		a+=(char)((num%10)+'0');
+		num/=10;
+	}
+	return a;
+}
 void input_data(){
 	ifstream fst;
 	int m,a,b,on_f,o;
@@ -76,14 +84,14 @@ void dfs(int now,string re,int tot){
 		return ;
 	}                    
 	for(int i=0;i<node[now].child.size();i++){
-		dfs(node[now].child[i].nxt,re+(char)(node[now].child[i].nxt+'0')+" ",tot+node[now].child[i].value);
+		dfs(node[now].child[i].nxt,re+int2str(node[now].child[i].nxt)+" ",tot+node[now].child[i].value);
 	}
 }
 int main(){
 	input_data();
 	ofstream ofs;
 	ofs.open("output.txt");
-	dfs(s,"",0);
+	dfs(s,int2str(s)+" ",0);
 	cout<<qlq<<mhin;
 	ofs<<qlq<<mhin;
 } 
