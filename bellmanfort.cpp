@@ -4,7 +4,7 @@
 #include<string>
 #include<algorithm>
 #define on_fire_para 1
-#define out_speed 1
+#define out_speed 2
 #define inf 2147483647
 using namespace std;
 struct pair_s{
@@ -56,8 +56,8 @@ void bellmanford(int s)
   }
 }
 void bfs_fire_spread(int tot,int now){
-	tot*=on_fire_para;
-	if(node[now].on_fire_t<tot){
+	
+	if(node[now].on_fire_t>=tot){
 		node[now].on_fire_t=tot;
 		for(int i=0;i<node[now].child.size();i++){
 			bfs_fire_spread(tot+node[now].child[i].value,node[now].child[i].nxt);
@@ -75,6 +75,9 @@ void input(){
 	ifs.open("input.txt");
 	ifs>>n;
 	for(int i=1;i<=n;i++){
+  		node[i].on_fire_t=inf;
+  	}
+	for(int i=1;i<=n;i++){
 		ifs>>count;
 		for(int v=0;v<count;v++){
 			ifs>>nxt>>val;
@@ -88,7 +91,8 @@ void input(){
 	ifs>>s>>e>>o;
 	for(int i=0;i<o;i++){
 		ifs>>of;
-		bfs_fire_spread(0,of);
+		node[of].on_fire_t=0;
+//		bfs_fire_spread(0,of);
 	}
 }
 string int2str(int num){
@@ -102,28 +106,41 @@ string int2str(int num){
 //	reverse(reversed.begin(),reversed.end());	
 	return reversed;
 }
-int complete_path (int s, int e, int p)
+int tot_path=0;
+string complete_path (int v, int j)
 {
-  if(s==e)
+  string p;
+  if(v==j)
   {
-    return p;
+    return "";
   }
-  p = 10*p + node[e].from;
-  complete_path(s,node[e].from,p);
+  p = int2str(node[j].from);
+  for(int i=0;i<node[node[j].from].child.size();i++){
+  	if(node[node[j].from].child[i].nxt==j){
+  		tot_path+=node[node[j].from].child[i].value;
+		break;
+	  }
+  }
+  return p+complete_path(v,node[j].from);
 }
 int main()
 {
   input();
   for (int i=1; i<=n; i++)
   {
+  	cout<<node[i].on_fire_t<<" ";
   	node[i].now_min=inf;
     node[i].from=-1;
   }
   bellmanford(s);
-  string result = int2str(complete_path(s,e,e));
-	cout<<result;
+  string result;
+  result+=complete_path(s,e);
   ofstream osf;
   osf.open("output.txt");
-  osf<<result;
+  reverse(result.begin(),result.end());
+  result+=' ';
+  result+=int2str(e);
+  cout<<result;
+  osf<<result<<" "<<tot_path;
   return 0;
 }
