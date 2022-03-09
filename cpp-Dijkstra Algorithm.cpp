@@ -1,3 +1,4 @@
+#include<algorithm>
 #include <iostream>
 #include <string>
 #include<vector>
@@ -13,6 +14,7 @@ struct node_struct{
 	int on_fire_t;
 	int x;
 	int y;
+	int from;
 	int was_father;
 	vector<pair_s> child;
 	vector<pair_s> father;
@@ -20,13 +22,23 @@ struct node_struct{
 node_struct node[200];
 int n,s,e,yourdad[2000]={};
 void bfs_fire_out(int,int);
+string int2str(int num){
+	string a;
+	while(num){
+		a+=(char)((num%10)+'0');
+		num/=10;
+	}
+	string reversed(a);
+	reverse(reversed.begin(),reversed.end());	
+	return reversed;
+}
 void init();
 void input_data(){
 	int x,a,b,o,f_in;
 	pair_s tmp;
 	ifstream f_data,f_xy;
 	string read_in;
-	f_data.open("input_data.txt");
+	f_data.open("input.txt");
 	f_data>>n;
 	init();
 	for(int i=1;i<=n;i++){//逐一輸入每個node的資訊
@@ -48,6 +60,7 @@ void input_data(){
 	}
 }
 void bfs_fire_out(int pos,int t){
+	t*=2;
 	if(t<=node[pos].on_fire_t){
 		node[pos].on_fire_t=t;
 		for(int i=0;i<node[pos].child.size();i++){
@@ -76,26 +89,34 @@ void dijkstra(int u){
 		node[start].was_father=1;
 		for (int k=0; k<node[start].child.size(); k++)
 		{
-				if (node[node[start].child[k].nxt].now_value >node[start].now_value + node[start].child[k].value)
+				if (node[node[start].child[k].nxt].now_value >node[start].now_value + node[start].child[k].value && node[start].now_value+node[start].child[k].value<node[node[start].child[k].nxt].on_fire_t)
 				{
 					node[node[start].child[k].nxt].now_value = node[start].now_value + node[start].child[k].value;
-					yourdad[node[start].child[k].nxt] = start;
+					node[node[start].child[k].nxt].from = start;
 				}
 		}
 	}
 }
-int complete_path (int s, int en, int p)
+int tot_path;
+string complete_path (int v, int j)
 {
-  if(s==en)
+  string p;
+  if(v==j)
   {
-    return p;
+    return "";
   }
-  p = 10*p + yourdad[en];
-  complete_path(s,yourdad[en],p);
+  p = int2str(node[j].from);
+  for(int i=0;i<node[node[j].from].child.size();i++){
+  	if(node[node[j].from].child[i].nxt==j){
+  		tot_path+=node[node[j].from].child[i].value;
+		break;
+	  }
+  }
+  return p+" "+complete_path(v,node[j].from);
 }
 void init(){
 	for(int i=1;i<=n;i++){
-		yourdad[i]=0;
+		node[i].from=0;
 		node[i].now_value=inf;
 		node[i].on_fire_t=inf;
 		node[i].was_father=0;
@@ -105,8 +126,10 @@ int main(){
 input_data();
 dijkstra(1);
 // cout<<"!";
-int result=complete_path(s,e,e);
+string result=int2str(e)+' ';
+result+=complete_path(s,e);
+//result+=int2str(e);
 ofstream opt("output.txt");
-opt<<result;
+opt<<result<<" "<<tot_path;
 return 0;
 }
