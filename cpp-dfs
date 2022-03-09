@@ -12,7 +12,7 @@ struct pair_s{//自製pair
 };
 struct node_struct{
 	int now_value;
-	int on_fire_t; 
+	double on_fire_t; 
 	int x;
 	int y;
 	vector<pair_s> child;
@@ -21,6 +21,7 @@ struct node_struct{
 int n,s,e;
 node_struct node[1000];
 void bfs_fire_out(int pos,int t){
+	t*=2;
 	if(t<node[pos].on_fire_t){
 		node[pos].on_fire_t=t;
 		for(int i=0;i<node[pos].child.size();i++){
@@ -73,7 +74,7 @@ void input_data(){
 }
 int mhin=99999;
 string qlq;
-void dfs(int now,string re,int tot){
+void dfs(int now,string re,double tot){
 //	cout<<now;
 	if(now==e){
 		if(tot<mhin){
