@@ -58,7 +58,7 @@ void bellmanford(int s)
 void bfs_fire_spread(int tot,int now){
 	
 	if(node[now].on_fire_t>=tot){
-		node[now].on_fire_t=tot;
+		node[now].on_fire_t=tot*2;
 		for(int i=0;i<node[now].child.size();i++){
 			bfs_fire_spread(tot+node[now].child[i].value,node[now].child[i].nxt);
 		}
