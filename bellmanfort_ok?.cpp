@@ -56,8 +56,7 @@ void bellmanford(int s)
   }
 }
 void bfs_fire_spread(int tot,int now){
-	
-	if(node[now].on_fire_t>=tot){
+	if(node[now].on_fire_t>=tot*2){
 		node[now].on_fire_t=tot*2;
 		for(int i=0;i<node[now].child.size();i++){
 			bfs_fire_spread(tot+node[now].child[i].value,node[now].child[i].nxt);
@@ -91,8 +90,8 @@ void input(){
 	ifs>>s>>e>>o;
 	for(int i=0;i<o;i++){
 		ifs>>of;
-		node[of].on_fire_t=0;
-//		bfs_fire_spread(0,of);
+//		node[of].on_fire_t=0;
+		bfs_fire_spread(0,of);
 	}
 }
 string int2str(int num){
