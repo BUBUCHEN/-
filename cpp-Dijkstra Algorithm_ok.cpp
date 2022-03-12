@@ -1,4 +1,5 @@
 #include<algorithm>
+#include<windows.h>
 #include <iostream>
 #include <string>
 #include<vector>
@@ -19,8 +20,8 @@ struct node_struct{
 	vector<pair_s> child;
 	vector<pair_s> father;
 };
-node_struct node[200];
-int n,s,e,yourdad[2000]={};
+node_struct node[200000];
+int n,s,e,yourdad[200000]={};
 void bfs_fire_out(int,int);
 string int2str(int num){
 	string a;
@@ -123,6 +124,7 @@ void init(){
 	}
 }
 int main(){
+	DWORD star_time = GetTickCount();
 input_data();
 dijkstra(1);
 // cout<<"!";
@@ -130,7 +132,9 @@ string result=int2str(e)+' ';
 result+=complete_path(s,e);
 //result+=int2str(e);
 ofstream opt("output.txt");
+DWORD end_time = GetTickCount();
+  cout<<"\n run_time= "<<end_time - star_time;
 cout<<result<<tot_path;
-opt<<result<<" "<<tot_path;
+opt<<result<<" "<<tot_path<<" "<<end_time - star_time;
 return 0;
 }
