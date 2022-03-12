@@ -1,4 +1,5 @@
 #include<iostream>
+#include<windows.h>
 #include<fstream>
 #include<vector>
 #include<algorithm>
@@ -19,7 +20,7 @@ struct node_struct{
 	vector<pair_s> father; 
 };
 int n,s,e;
-node_struct node[1000];
+node_struct node[200000];
 void bfs_fire_out(int pos,int t){
 	t*=2;
 	if(t<node[pos].on_fire_t){
@@ -92,10 +93,14 @@ void dfs(int now,string re,double tot){
 	}
 }
 int main(){
+	DWORD star_time = GetTickCount();
 	input_data();
 	ofstream ofs;
 	ofs.open("output.txt");
 	dfs(s,int2str(s)+" ",0);
 	cout<<qlq<<mhin;
-	ofs<<qlq<<mhin;
+	DWORD end_time = GetTickCount();
+	ofs<<qlq<<mhin<<" "<<end_time - star_time;
+	
+  cout<<"\n run_time= "<<end_time - star_time;
 } 
