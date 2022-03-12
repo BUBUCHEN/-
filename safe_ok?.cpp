@@ -38,22 +38,20 @@ void bfs_fire_spread(int tot,int now){
 	return ;
 }
 void algo_safe(int u){
-	int start =u;
+	int start =u; 
 	node[start].now_min=0;
 	for(int i=1;i<=n;i++){
 		int safe=0;
 		for(int j=1;j<=n;j++){
-			if(save<node[j].on_fire_t&&node[j].from==0){
+			if(safe<node[j].on_fire_t&&node[j].was_f==0){
 				safe=node[j].on_fire_t;
 				start=j;
 			}
 		}
 		node[start].was_f=1;
 		for(int k=0;k<node[start].child.size();k++){
-			if(node[k].on_fire_t<node[start].on_fire_t+node[start].child[k].value){
-				node[k].on_fire_t=node[start].on_fire_t+node[start].child[k].value;
-				node[k].from=start;
-			}
+			node[node[start].child[k].nxt].now_min=node[node[start].child[k].nxt].now_min;
+			node[node[start].child[k].nxt].from=start; 
 		}
 	}
 } 
@@ -126,5 +124,6 @@ int main()
   string result;
   result=complete_path(s,e);
   ofstream ofs("output.txt");
-  ofs<<result;
+  cout<<result<<tot_path;
+  ofs<<result<<tot_path;
 }
