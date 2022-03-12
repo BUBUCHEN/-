@@ -1,3 +1,4 @@
+#include<windows.h>
 #include<algorithm>
 #include <iostream>
 #include <string>
@@ -19,7 +20,7 @@ struct node_struct{
 	vector<pair_s> child;
 	vector<pair_s> father;
 };
-node_struct node[200];
+node_struct node[200000];
 int n,s,e,yourdad[2000]={};
 void bfs_fire_out(int,int);
 string int2str(int num){
@@ -119,6 +120,7 @@ void init(){
 	}
 }
 int main(){
+ DWORD star_time = GetTickCount();
 input_data();
 for(int i=1;i<=n;i++){
 	cout<<node[i].on_fire_t<<" ";
@@ -132,7 +134,9 @@ for(int i=1;i<=n;i++){
 result+=complete_path(s,e);
 //result+=int2str(e);
 ofstream opt("output.txt");
+DWORD end_time = GetTickCount();
+	cout<<"\nrun_time= "<<end_time - star_time;
 cout<<"\n"<<result<<tot_path;
-opt<<result<<" "<<tot_path;
+opt<<result<<" "<<tot_path<<" "<<end_time - star_time;
 return 0;
 }
