@@ -130,6 +130,7 @@ string result=int2str(e)+' ';
 result+=complete_path(s,e);
 //result+=int2str(e);
 ofstream opt("output.txt");
+cout<<result<<tot_path;
 opt<<result<<" "<<tot_path;
 return 0;
 }
