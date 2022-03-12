@@ -121,8 +121,8 @@ int main()
     node[i].from=-1;
   }
   algo_safe(1);
-  string result;
-  result=complete_path(s,e);
+  string result=int2str(e);
+  result+=complete_path(s,e);
   ofstream ofs("output.txt");
   cout<<result<<tot_path;
   ofs<<result<<tot_path;
