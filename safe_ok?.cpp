@@ -1,3 +1,4 @@
+#include<windows.h>
 #include<iostream>
 #include<fstream>
 #include<vector>
@@ -112,6 +113,7 @@ string complete_path (int v, int j)
 }
 int main()
 {
+  DWORD star_time = GetTickCount();
   input();
   for (int i=1; i<=n; i++)
   {
@@ -124,6 +126,9 @@ int main()
   string result=int2str(e);
   result+=complete_path(s,e);
   ofstream ofs("output.txt");
+  DWORD end_time = GetTickCount();
+  cout<<"\n run_time= "<<end_time - star_time;
   cout<<result<<tot_path;
-  ofs<<result<<tot_path;
+  ofs<<result<<tot_path<<" "<<end_time - star_time;
+  
 }
