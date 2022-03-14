@@ -73,10 +73,10 @@ void input_data(){
 		bfs_fire_out(on_f,0);
 	}
 }
-int mhin=99999;
+int mhin=2147483647;
 string qlq;
 void dfs(int now,string re,double tot){
-//	cout<<now;
+
 	if(now==e){
 		if(tot<mhin){
 			mhin=tot;
@@ -93,14 +93,20 @@ void dfs(int now,string re,double tot){
 	}
 }
 int main(){
-	DWORD star_time = GetTickCount();
+	double time = 0;
+double counts = 0;
+LARGE_INTEGER nFreq;
+LARGE_INTEGER nBeginTime;
+LARGE_INTEGER nEndTime;
 	input_data();
 	ofstream ofs;
 	ofs.open("output.txt");
 	dfs(s,int2str(s)+" ",0);
 	cout<<qlq<<mhin;
-	DWORD end_time = GetTickCount();
-	ofs<<qlq<<mhin<<" "<<end_time - star_time;
+QueryPerformanceCounter(&nEndTime);//停止計時  
+time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
+cout<<qlq<<mhin;
+	ofs<<qlq<<mhin<<" "<<1000*time;
 	
-  cout<<"\n run_time= "<<end_time - star_time;
+  cout<<"\n run_time= "<<1000*time;
 } 
