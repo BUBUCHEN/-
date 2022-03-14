@@ -4,7 +4,7 @@
 #include <string>
 #include<vector>
 #include<fstream>
-#define inf 9999999;
+#define inf 2147483647;
 using namespace std;
 struct pair_s{//自製pair
 		int nxt;//下一個節點
@@ -129,6 +129,8 @@ double counts = 0;
 LARGE_INTEGER nFreq;
 LARGE_INTEGER nBeginTime;
 LARGE_INTEGER nEndTime;
+QueryPerformanceFrequency(&nFreq);
+QueryPerformanceCounter(&nBeginTime);
 input_data();
 dijkstra(1);
 string result=int2str(e)+' ';
