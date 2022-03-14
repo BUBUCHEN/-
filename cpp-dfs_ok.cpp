@@ -98,6 +98,8 @@ double counts = 0;
 LARGE_INTEGER nFreq;
 LARGE_INTEGER nBeginTime;
 LARGE_INTEGER nEndTime;
+QueryPerformanceFrequency(&nFreq);
+	QueryPerformanceCounter(&nBeginTime);
 	input_data();
 	ofstream ofs;
 	ofs.open("output.txt");
