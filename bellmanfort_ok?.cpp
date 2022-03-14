@@ -4,7 +4,7 @@
 #include <string>
 #include<vector>
 #include<fstream>
-#define inf 9999999
+#define inf 2147483647
 using namespace std;
 struct pair_s{//自製pair
 		int nxt;//下一個節點
@@ -61,7 +61,7 @@ void input_data(){
 	}
 }
 void bfs_fire_out(int pos,int t){
-	t*=4;
+	t*=2;
 	if(t<=node[pos].on_fire_t){
 		node[pos].on_fire_t=t;
 		for(int i=0;i<node[pos].child.size();i++){
@@ -120,7 +120,11 @@ void init(){
 	}
 }
 int main(){
- DWORD star_time = GetTickCount();
+double time = 0;
+double counts = 0;
+LARGE_INTEGER nFreq;
+LARGE_INTEGER nBeginTime;
+LARGE_INTEGER nEndTime;
 input_data();
 for(int i=1;i<=n;i++){
 	cout<<node[i].on_fire_t<<" ";
@@ -134,9 +138,9 @@ for(int i=1;i<=n;i++){
 result+=complete_path(s,e);
 //result+=int2str(e);
 ofstream opt("output.txt");
-DWORD end_time = GetTickCount();
-	cout<<"\nrun_time= "<<end_time - star_time;
+QueryPerformanceCounter(&nEndTime);//停止計時  
+time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
 cout<<"\n"<<result<<tot_path;
-opt<<result<<" "<<tot_path<<" "<<end_time - star_time;
+opt<<result<<" "<<tot_path<<" "<<time*1000;
 return 0;
 }
