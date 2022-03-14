@@ -1,134 +1,126 @@
-#include<windows.h>
-#include<iostream>
-#include<fstream>
-#include<vector>
-#include<string>
 #include<algorithm>
-#define on_fire_para 1
-#define out_speed 2
-#define inf 2147483647
+#include<windows.h>
+#include <iostream>
+#include <string>
+#include<vector>
+#include<fstream>
+#define inf 2147483647;
 using namespace std;
-struct pair_s{
-	int nxt;
-	int value;
+struct pair_s{//自製pair
+		int nxt;//下一個節點
+		int value;//權重
 };
-struct node_s{
+struct node_struct{
+	int now_value;
+	int on_fire_t;
 	int x;
 	int y;
 	int from;
-	int was_f;
-	int now_min;
-	int on_fire_t;
+	int was_father;
 	vector<pair_s> child;
 	vector<pair_s> father;
 };
-	int n;
-	int s,e;
-	node_s node[200];	
-void bfs_fire_spread(int tot,int now){
-	
-	if(node[now].on_fire_t>=tot){
-		node[now].on_fire_t=tot*2;
-		for(int i=0;i<node[now].child.size();i++){
-			bfs_fire_spread(tot+node[now].child[i].value,node[now].child[i].nxt);
-		}
-		for(int i=0;i<node[now].father.size();i++){
-			bfs_fire_spread(tot+node[now].father[i].value,node[now].father[i].nxt);
-		}
-	}
-	return ;
-}
-void algo_safe(int u){
-	int start =u; 
-	node[start].now_min=0;
-	for(int i=1;i<=n;i++){
-		int safe=0;
-		for(int j=1;j<=n;j++){
-			if(safe<node[j].on_fire_t&&node[j].was_f==0){
-				safe=node[j].on_fire_t;
-				start=j;
-			}
-		}
-		node[start].was_f=1;
-		for(int k=0;k<node[start].child.size();k++){
-			node[node[start].child[k].nxt].now_min=node[node[start].child[k].nxt].now_min;
-			node[node[start].child[k].nxt].from=start; 
-		}
-	}
-} 
-void input(){
-	pair_s tmp;
-	int count,nxt,val,o,of;
-	ifstream ifs;
-	ifs.open("input.txt");
-	ifs>>n;
-	for(int i=1;i<=n;i++){
-  		node[i].on_fire_t=inf;
-  	}
-	for(int i=1;i<=n;i++){
-		ifs>>count;
-		for(int v=0;v<count;v++){
-			ifs>>nxt>>val;
-			tmp.nxt=nxt;
-			tmp.value=val;
-			node[i].child.push_back(tmp);
-			tmp.nxt=i;
-			node[nxt].father.push_back(tmp);		
-		}
-	}
-	ifs>>s>>e>>o;
-	for(int i=0;i<o;i++){
-		ifs>>of;
-		node[of].on_fire_t=0;
-//		bfs_fire_spread(0,of);
-	}
-}
+node_struct node[200000];
+int n,s,e;
+void bfs_fire_out(int,int);
 string int2str(int num){
 	string a;
 	while(num){
 		a+=(char)((num%10)+'0');
-		a+=' ';
 		num/=10;
 	}
 	string reversed(a);
-//	reverse(reversed.begin(),reversed.end());	
+	reverse(reversed.begin(),reversed.end());	
 	return reversed;
 }
-int tot_path=0;
-string complete_path (int v, int j)
-{
-  string p;
-  if(v==j)
-  {
-    return "";
-  }
-  p = int2str(node[j].from);
-  for(int i=0;i<node[node[j].from].child.size();i++){
-  	if(node[node[j].from].child[i].nxt==j){
-  		tot_path+=node[node[j].from].child[i].value;
-		break;
-	  }
-  }
-  return p+complete_path(v,node[j].from);
+void init();
+void input_data(){
+	int x,a,b,o,f_in;
+	pair_s tmp;
+	ifstream f_data,f_xy;
+	string read_in;
+	f_data.open("input.txt");
+	f_data>>n;
+	init();
+	for(int i=1;i<=n;i++){//逐一輸入每個node的資訊
+		f_data>>x;
+		for(int v=0;v<x;v++){
+			f_data>>a>>b;
+			tmp.nxt=a,tmp.value=b;
+			node[i].child.push_back(tmp);
+			tmp.nxt=i;
+			node[a].father.push_back(tmp);
+		}
+	}
+	f_data>>s>>e>>o;
+	for(int v=0;v<o;v++){
+		f_data>>f_in;
+		// cout<<f_in;
+		node[f_in].on_fire_t=0;
+		 bfs_fire_out(f_in,0);
+	}
 }
-int main()
-{
-  DWORD star_time = GetTickCount();
-  input();
-  for (int i=1; i<=n; i++)
-  {
-  	node[i].was_f=0;
-//  	cout<<node[i].on_fire_t<<" ";
-  	node[i].now_min=inf;
-    node[i].from=-1;
-  }
-  algo_safe(1);
-  string result=int2str(e);
-  result+=complete_path(s,e);
-  ofstream ofs("output.txt");
-  DWORD end_time = GetTickCount();
-  cout<<"\n run_time= "<<end_time - star_time;
-  cout<<result<<tot_path;
-  ofs<<result<<tot_path<<" "<<end_time - star_time;
-  
+void bfs_fire_out(int pos,int t){
+	t*=2;
+	if(t<=node[pos].on_fire_t){
+		node[pos].on_fire_t=t;
+		for(int i=0;i<node[pos].child.size();i++){
+			bfs_fire_out(node[pos].child[i].nxt,t+node[pos].child[i].value);
+		}
+		for(int i=0;i<node[pos].father.size();i++){
+			bfs_fire_out(node[pos].father[i].nxt,t+node[pos].father[i].value);
+		}
+	}
+	else{
+		return ;
+	}
+}
+int n_min=-1*inf;
+string ph;
+void dfs(int pos,int tot,string recoder,int actual_val){
+	if(node[pos].on_fire_t==0||actual_val>node[pos].on_fire_t){
+		return ;
+	}
+	if(pos==e){
+//	cout<<recoder<<"\n";	
+		if(n_min<tot){
+//			cout<<n_min;
+			n_min=tot;
+			ph=recoder;	
+		}
+	return ;
+	}
+	for(int i=0;i<node[pos].child.size();i++){
+		dfs(node[pos].child[i].nxt,tot+node[node[pos].child[i].nxt].on_fire_t,recoder+" "+int2str(node[pos].child[i].nxt),actual_val+node[pos].child[i].value);
+	}
+}
+void init(){
+	for(int i=1;i<=n;i++){
+		node[i].from=0;
+		node[i].now_value=inf;
+		node[i].on_fire_t=inf;
+		node[i].was_father=0;
+	}
+}
+int main(){
+double time = 0;
+double counts = 0;
+LARGE_INTEGER nFreq;
+LARGE_INTEGER nBeginTime;
+LARGE_INTEGER nEndTime;
+QueryPerformanceFrequency(&nFreq);
+QueryPerformanceCounter(&nBeginTime);
+input_data();
+for(int i=1;i<=n;i++){
+	cout<<node[i].on_fire_t<<" ";
+}
+cout<<"\n";
+dfs(s,0,int2str(s),0);
+cout<<ph;
+ofstream opt("output.txt");
+QueryPerformanceCounter(&nEndTime);//停止計時  
+time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
+//cout<<result<<tot_path<<" "<<1000*time;
+opt<<ph<<" "<<n_min<<" "<<1000*time;
+return 0;
 }
