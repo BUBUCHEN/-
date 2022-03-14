@@ -124,17 +124,19 @@ void init(){
 	}
 }
 int main(){
-	DWORD star_time = GetTickCount();
+double time = 0;
+double counts = 0;
+LARGE_INTEGER nFreq;
+LARGE_INTEGER nBeginTime;
+LARGE_INTEGER nEndTime;
 input_data();
 dijkstra(1);
-// cout<<"!";
 string result=int2str(e)+' ';
 result+=complete_path(s,e);
-//result+=int2str(e);
 ofstream opt("output.txt");
-DWORD end_time = GetTickCount();
-  cout<<"\n run_time= "<<end_time - star_time;
-cout<<result<<tot_path;
-opt<<result<<" "<<tot_path<<" "<<end_time - star_time;
+QueryPerformanceCounter(&nEndTime);//停止計時  
+time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
+cout<<result<<tot_path<<" "<<1000*time;
+opt<<result<<" "<<tot_path<<" "<<1000*time;
 return 0;
 }
