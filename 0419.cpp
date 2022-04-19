@@ -85,12 +85,11 @@ void bfs_fire_out(){
 int mhin=2147483647;
 string qlq;
 void dfs(int now,string re,int tot){
-
-	
 	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
 		return ;
 	}
 	if(now==e){
+		cout<<"yee\n";
 		if(tot<mhin){
 			mhin=tot;
 			qlq=re;
@@ -161,20 +160,26 @@ QueryPerformanceCounter(&nBeginTime);
 input_data();
 cout<<"onft ";
 int ne,max=-1;
-for(int i=1;i<=n;i++){
-	if(node[i].on_fire_t>max){
-		max=node[i].on_fire_t;
-		ne=i;
-	}
-	cout<<node[i].on_fire_t<<" ";
-}
-//e=ne;
 cout<<"\n";
 dfs(s,int2str(s)+" ",0);
 if(!have_sol){
 	e=ne;
 }
 dfs(s,int2str(s)+" ",0);
+int nmax=-1;
+if(!have_sol){
+		for(int i=1;i<=n;i++){
+			if(node[i].on_fire_t<max&&node[i].on_fire_t>nmax){
+				nmax=node[i].on_fire_t;
+				ne=i;
+			}
+		}
+		e=ne;
+		dfs(s,int2str(s)+" ",0);
+}
+if(!have_sol){
+	cout<<"QAQ...\n";
+}
 ofstream opt("output.txt");
 QueryPerformanceCounter(&nEndTime);
 time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
