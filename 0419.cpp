@@ -161,10 +161,10 @@ input_data();
 cout<<"onft ";
 int ne,max=-1;
 cout<<"\n";
-dfs(s,int2str(s)+" ",0);
+dfs(s,int2str(s)+" ",0);int nmax=-1,bmax=-1;
 for(int i=1;i<=n;i++){
-			if(node[i].on_fire_t<max&&node[i].on_fire_t>nmax){
-				nmax=node[i].on_fire_t;
+			if(node[i].on_fire_t>bmax){
+				bmax=node[i].on_fire_t;
 				ne=i;
 			}
 		}
@@ -172,10 +172,10 @@ if(!have_sol){
 	e=ne;
 }
 dfs(s,int2str(s)+" ",0);
-int nmax=-1;
+nmax=-1;
 if(!have_sol){
 		for(int i=1;i<=n;i++){
-			if(node[i].on_fire_t<max&&node[i].on_fire_t>nmax){
+			if(node[i].on_fire_t<bmax&&node[i].on_fire_t>nmax){
 				nmax=node[i].on_fire_t;
 				ne=i;
 			}
