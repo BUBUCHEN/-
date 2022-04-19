@@ -173,7 +173,7 @@ dfs(s,int2str(s)+" ",0);
 ofstream opt("output.txt");
 QueryPerformanceCounter(&nEndTime);
 time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
-cout<<qlq<<mhin<<" "<<1000*time;
-opt<<qlq<<mhin<<" "<<1000*time;
+cout<<qlq<<" "<<mhin<<" "<<1000*time;
+opt<<qlq<<" "<<mhin<<" "<<1000*time;
 return 0;
 }
