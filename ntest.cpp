@@ -1,41 +1,30 @@
-#include<iostream>
-#include<windows.h>
-#include<fstream>
-#include<vector>
 #include<algorithm>
-#include <stdlib.h>
-#include <stdio.h>
-
+#include<windows.h>
+#include <iostream>
+#include <string>
+#include<vector>
+#include<fstream>
+#include<queue>
+#define inf 2147483647;
 using namespace std;
-struct pair_s{//??pair 
-		int nxt;//????? 
-		int value;//?? 
+struct pair_s{
+		int nxt;
+		int value;
 };
 struct node_struct{
 	int now_value;
-	long long on_fire_t; 
+	int on_fire_t;
 	int x;
 	int y;
+	int from;
+	int was_father;
 	vector<pair_s> child;
-	vector<pair_s> father; 
+	vector<pair_s> father;
 };
-int n,s,e;
+queue<int> onfy;
 node_struct node[200000];
-void bfs_fire_out(int pos,int t){
-	t*=2;
-	if(t<node[pos].on_fire_t){
-		node[pos].on_fire_t=t;
-		for(int i=0;i<node[pos].child.size();i++){
-			bfs_fire_out(node[pos].child[i].nxt,t+node[pos].child[i].value);
-		}
-		for(int i=0;i<node[pos].father.size();i++){
-			bfs_fire_out(node[pos].father[i].nxt,t+node[pos].father[i].value);
-		}
-	}	
-	else{
-		return ;
-	}
-}
+int n,s,e,yourdad[200000]={};
+void bfs_fire_out();
 string int2str(int num){
 	string a;
 	while(num){
@@ -46,76 +35,121 @@ string int2str(int num){
 	reverse(reversed.begin(),reversed.end());	
 	return reversed;
 }
+void init();
 void input_data(){
-	ifstream fst;
-	int m,a,b,on_f,o;
+	int x,a,b,o,f_in;
 	pair_s tmp;
-	fst.open("input.txt");
-	fst>>n;
-//	cout<<n;
+	ifstream f_data,f_xy;
+	string read_in;
+	f_data.open("input.txt");
+	f_data>>n;
+	init();
 	for(int i=1;i<=n;i++){
-		fst>>m;
-		for(int c=0;c<m;c++){
-			fst>>a>>b;
+		f_data>>x;
+		for(int v=0;v<x;v++){
+			f_data>>a>>b;
 			tmp.nxt=a,tmp.value=b;
 			node[i].child.push_back(tmp);
 			tmp.nxt=i;
 			node[a].father.push_back(tmp);
 		}
 	}
-	for(int i=1;i<=n;i++){
-		node[i].on_fire_t=99999;
-		node[i].now_value=9999;
+	f_data>>s>>e>>o;
+	for(int v=0;v<o;v++){
+		f_data>>f_in;
+		node[f_in].on_fire_t=0;
+		onfy.push(f_in);
 	}
-	fst>>s>>e>>o;
-	for(int j=0;j<o;j++){
-		fst>>on_f;
-		bfs_fire_out(on_f,0);
+	bfs_fire_out();
+}
+void bfs_fire_out(){
+	int nps;
+	while(!onfy.empty()){
+		nps=onfy.front();
+		onfy.pop();
+		for(int i=0;i<node[nps].child.size();i++){
+			if(node[node[nps].child[i].nxt].on_fire_t>node[nps].child[i].value+node[nps].on_fire_t){
+				node[node[nps].child[i].nxt].on_fire_t=node[nps].child[i].value+node[nps].on_fire_t;
+				onfy.push(node[nps].child[i].nxt);
+			}
+		}
+		for(int i=0;i<node[nps].father.size();i++){
+			if(node[node[nps].father[i].nxt].on_fire_t>node[nps].father[i].value+node[nps].on_fire_t){
+				node[node[nps].father[i].nxt].on_fire_t=node[nps].father[i].value+node[nps].on_fire_t;
+				onfy.push(node[nps].father[i].nxt);
+			}
+		}
 	}
 }
-int mhin=2147483647;
-string qlq;
-void dfs(int now,string re,double tot){
-
-	if(now==e){
-		if(tot<mhin){
-			mhin=tot;
-			qlq=re;
+void dijkstra(int u){
+	int start=u,min=inf;
+	node[start].now_value=0;
+	for(int i=0;i<n;i++){
+		min=inf;
+		for(int j=1;j<=n;j++){
+			if (min> node[j].now_value and node[j].was_father==0)
+			{
+				min = node[j].now_value;
+				start = j;
+			}
 		}
-//		cout<<re<<" "<<tot<<"!\n";
-		return ;
+		node[start].was_father=1;
+		for (int k=0; k<node[start].child.size(); k++)
+		{
+				if (node[node[start].child[k].nxt].now_value >node[start].now_value + node[start].child[k].value && node[start].now_value+node[start].child[k].value<node[node[start].child[k].nxt].on_fire_t)
+				{
+					node[node[start].child[k].nxt].now_value = node[start].now_value + node[start].child[k].value;
+					node[node[start].child[k].nxt].from = start;
+				}
+		}
 	}
-	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
-		return ;
-	}                    
-	for(int i=0;i<node[now].child.size();i++){
-		dfs(node[now].child[i].nxt,re+int2str(node[now].child[i].nxt)+" ",tot+node[now].child[i].value);
+}
+int tot_path;
+string complete_path (int v, int j)
+{
+  string p;
+  if(v==j)
+  {
+    return "";
+  }
+  p = int2str(node[j].from);
+  for(int i=0;i<node[node[j].from].child.size();i++){
+  	if(node[node[j].from].child[i].nxt==j){
+  		tot_path+=node[node[j].from].child[i].value;
+		break;
+	  }
+  }
+  return p+" "+complete_path(v,node[j].from);
+}
+void init(){
+	for(int i=1;i<=n;i++){
+		node[i].from=0;
+		node[i].now_value=inf;
+		node[i].on_fire_t=inf;
+		node[i].was_father=0;
 	}
 }
 int main(){
-	double time = 0;
+double time = 0;
 double counts = 0;
 LARGE_INTEGER nFreq;
 LARGE_INTEGER nBeginTime;
 LARGE_INTEGER nEndTime;
 QueryPerformanceFrequency(&nFreq);
-	QueryPerformanceCounter(&nBeginTime);
-	input_data();
-	ofstream ofs;
-	long long pos,max=-1;
-	for(int i=1;i<=n;i++){
-		if(node[i].on_fire_t>max){
-			pos=i;
-			max=node[i].on_fire_t;
-		}
-	}
-	e=pos;
-	ofs.open("output.txt");
-	dfs(s,int2str(s)+" ",0);
-	cout<<qlq<<mhin;
+QueryPerformanceCounter(&nBeginTime);
+input_data();
+cout<<"onft ";
+for(int i=1;i<=n;i++){
+	cout<<node[i].on_fire_t<<" ";
+}
+cout<<"\n";
+dijkstra(1);
+string result=int2str(e)+' ';
+result+=complete_path(s,e);
+ofstream opt("output.txt");
 QueryPerformanceCounter(&nEndTime);
 time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
-cout<<qlq<<mhin;
-	ofs<<qlq<<mhin<<" "<<1000*time;
-  cout<<"\n run_time= "<<1000*time;
-} 
+cout<<result<<tot_path<<" "<<1000*time;
+opt<<result<<" "<<tot_path<<" "<<1000*time;
+return 0;
+}
