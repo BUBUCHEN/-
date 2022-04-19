@@ -11,6 +11,7 @@ struct pair_s{
 		int nxt;
 		int value;
 };
+bool have_sol=0;
 struct node_struct{
 	int now_value;
 	int on_fire_t;
@@ -94,7 +95,7 @@ void dfs(int now,string re,int tot){
 			mhin=tot;
 			qlq=re;
 		}
-		cout<<"yee\n";
+		have_sol=1;
 		return ;
 	}                   
 	for(int i=0;i<node[now].child.size();i++){
@@ -170,7 +171,10 @@ for(int i=1;i<=n;i++){
 //e=ne;
 cout<<"\n";
 dfs(s,int2str(s)+" ",0);
-
+if(!have_sol){
+	e=ne;
+}
+dfs(s,int2str(s)+" ",0);
 ofstream opt("output.txt");
 QueryPerformanceCounter(&nEndTime);
 time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
