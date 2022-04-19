@@ -162,6 +162,12 @@ cout<<"onft ";
 int ne,max=-1;
 cout<<"\n";
 dfs(s,int2str(s)+" ",0);
+for(int i=1;i<=n;i++){
+			if(node[i].on_fire_t<max&&node[i].on_fire_t>nmax){
+				nmax=node[i].on_fire_t;
+				ne=i;
+			}
+		}
 if(!have_sol){
 	e=ne;
 }
