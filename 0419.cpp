@@ -85,17 +85,18 @@ int mhin=2147483647;
 string qlq;
 void dfs(int now,string re,int tot){
 
+	
+	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
+		return ;
+	}
 	if(now==e){
 		if(tot<mhin){
 			mhin=tot;
 			qlq=re;
 		}
-		cout"yee\n";
+		cout<<"yee\n";
 		return ;
-	}
-	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
-		return ;
-	}                    
+	}                   
 	for(int i=0;i<node[now].child.size();i++){
 		dfs(node[now].child[i].nxt,re+int2str(node[now].child[i].nxt)+" ",tot+node[now].child[i].value);
 	}
