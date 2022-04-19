@@ -81,6 +81,25 @@ void bfs_fire_out(){
 		}
 	}
 }
+int mhin=2147483647;
+string qlq;
+void dfs(int now,string re,int tot){
+
+	if(now==e){
+		if(tot<mhin){
+			mhin=tot;
+			qlq=re;
+		}
+//		cout<<re<<" "<<tot<<"!\n";
+		return ;
+	}
+	if((tot>=node[now].on_fire_t||tot>=node[now].now_value)&&(tot!=0)){
+		return ;
+	}                    
+	for(int i=0;i<node[now].child.size();i++){
+		dfs(node[now].child[i].nxt,re+int2str(node[now].child[i].nxt)+" ",tot+node[now].child[i].value);
+	}
+}
 void dijkstra(int u){
 	int start=u,min=inf;
 	node[start].now_value=0;
@@ -139,17 +158,22 @@ QueryPerformanceFrequency(&nFreq);
 QueryPerformanceCounter(&nBeginTime);
 input_data();
 cout<<"onft ";
+int ne,max=-1;
 for(int i=1;i<=n;i++){
+	if(node[i].on_fire_t>max){
+		max=node[i].on_fire_t;
+		ne=i;
+	}
 	cout<<node[i].on_fire_t<<" ";
 }
+e=ne;
 cout<<"\n";
-dijkstra(1);
-string result=int2str(e)+' ';
-result+=complete_path(s,e);
+dfs(s,int2str(s)+" ",0);
+
 ofstream opt("output.txt");
 QueryPerformanceCounter(&nEndTime);
 time = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
-cout<<result<<tot_path<<" "<<1000*time;
-opt<<result<<" "<<tot_path<<" "<<1000*time;
+cout<<qlq<<mhin<<" "<<1000*time;
+opt<<qlq<<mhin<<" "<<1000*time;
 return 0;
 }
